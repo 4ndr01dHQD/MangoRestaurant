@@ -16,6 +16,7 @@ namespace Mango.Services.ProductAPI.Repository
             _db = db;
             _mapper = mapper;
         }
+
         public async Task<ProductDto> CreateUpdateProduct(ProductDto productDto)
         {
             Product product = _mapper.Map<ProductDto, Product>(productDto);
@@ -36,6 +37,12 @@ namespace Mango.Services.ProductAPI.Repository
             try
             {
                 Product product = await _db.Products.FirstOrDefaultAsync(x => x.ProductId == productId);
+                if (product == null)
+                {
+                    return false;
+                }
+                _db.Products.Remove(product);
+                await _db.SaveChangesAsync();
                 if (product == null)
                 {
                     return false;
